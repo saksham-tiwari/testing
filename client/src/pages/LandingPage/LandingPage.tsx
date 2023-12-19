@@ -15,19 +15,25 @@ const timeSlots = {
 };
 
 const timeSlotsUTC = {
-  morning: "T06:00:00Z",
-  noon: "T07:00:00Z",
-  afternoon: "T08:00:00Z",
-  evening: "T17:00:00Z",
+  "morning": "T06:00:00Z",
+  "noon": "T07:00:00Z",
+  "afternoon": "T08:00:00Z",
+  "evening": "T17:00:00Z",
 };
 
 const LandingPage = () => {
-  const [selectedSlot, setSelectedSlot] = useState(null);
+  const [selectedSlot, setSelectedSlot] = useState("");
   const [currentDate, setCurrentDate] = useState(new Date());
   const navigate = useNavigate();
-  const handleSlotClick = (key: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleSlotClick = (key:any) => {
     setSelectedSlot(key);
   };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const isKeyOfTimeSlotsUTC = (key: any): key is keyof typeof timeSlotsUTC => {
+    return key in timeSlotsUTC;
+  }
 
   const submit = () => {
     console.log(selectedSlot);
@@ -35,7 +41,10 @@ const LandingPage = () => {
       year: format(currentDate, "yyyy"),
       month: format(currentDate, "MM"),
     };
-    const dateStringStart = `${formattedDate.year}-${formattedDate.month}-01${timeSlotsUTC[selectedSlot]}`;
+    let dateStringStart: string
+    if (isKeyOfTimeSlotsUTC(selectedSlot)) {
+      dateStringStart = `${formattedDate.year}-${formattedDate.month}-01${timeSlotsUTC[selectedSlot]}`;
+    }
 
     axios
       .post(`${BaseURL}get-slots/`, formattedDate)
@@ -43,6 +52,7 @@ const LandingPage = () => {
         console.log(res.data);
         if (res.data.timings) {
           const timing = res.data.timings.find(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             (element : any) => element.start_time === dateStringStart
           );
           if (timing) {
