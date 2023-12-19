@@ -1,0 +1,191 @@
+openapi: 3.0.3
+info:
+  title: Yoga Flexmoney APIs
+  version: 1.0.0
+  description: This is the APIs list for Flexmoney assignment
+paths:
+  /api/v1/:
+    get:
+      operationId: api_v1_retrieve
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/get-slots/:
+    post:
+      operationId: api_v1_get_slots_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YogaBatch'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/YogaBatch'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/YogaBatch'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YogaBatch'
+          description: ''
+  /api/v1/payment/:
+    post:
+      operationId: api_v1_payment_create
+      tags:
+      - api
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/yoga-booking/:
+    post:
+      operationId: api_v1_yoga_booking_create
+      tags:
+      - api
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/YogaBooking'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/YogaBooking'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/YogaBooking'
+        required: true
+      security:
+      - cookieAuth: []
+      - basicAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/YogaBooking'
+          description: ''
+components:
+  schemas:
+    MonthEnum:
+      enum:
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      - 7
+      - 8
+      - 9
+      - 10
+      - 11
+      - 12
+      type: integer
+      description: |-
+        * `1` - January
+        * `2` - February
+        * `3` - March
+        * `4` - April
+        * `5` - May
+        * `6` - June
+        * `7` - July
+        * `8` - August
+        * `9` - September
+        * `10` - October
+        * `11` - November
+        * `12` - December
+    NestedYogaBatchTimings:
+      type: object
+      properties:
+        external_id:
+          type: string
+          format: uuid
+          readOnly: true
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+      required:
+      - end_time
+      - external_id
+      - start_time
+    YogaBatch:
+      type: object
+      properties:
+        timings:
+          type: array
+          items:
+            $ref: '#/components/schemas/NestedYogaBatchTimings'
+        external_id:
+          type: string
+          format: uuid
+          readOnly: true
+        year:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        month:
+          allOf:
+          - $ref: '#/components/schemas/MonthEnum'
+          minimum: -2147483648
+          maximum: 2147483647
+      required:
+      - external_id
+      - month
+      - timings
+      - year
+    YogaBooking:
+      type: object
+      properties:
+        external_id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 250
+        email:
+          type: string
+          format: email
+          maxLength: 250
+        date_of_birth:
+          type: string
+          format: date
+        yoga_batch:
+          type: integer
+          nullable: true
+      required:
+      - date_of_birth
+      - email
+      - external_id
+      - name
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
